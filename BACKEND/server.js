@@ -7,7 +7,7 @@ const app = express();
 const port = 3000;
 const JWT_SECRET = 'bf8297930f4c5be512377e0d6e80176ac825398dfb573496110143affb7f6bb3';
 const users = [];
-const todos = [];
+let todos = [];
 
 app.use(express.json());
 app.use(cors());
@@ -54,7 +54,7 @@ app.post('/signin', (req, res) => {
 
     if(!user) {
         res.status(401).json({
-            message: "Either the username or the password is wrong"
+            message: "Invalid input credentials"
             });
         return;
     }
@@ -73,7 +73,7 @@ app.post('/signin', (req, res) => {
 })
 
 function auth (req, res, next) {
-    const token = req.headers.authorization;
+    const token =  req.headers.authorization;
 
     if (token) {
         jwt.verify(token, JWT_SECRET, (err, decoded) => {
@@ -93,17 +93,80 @@ function auth (req, res, next) {
     }
 }
 
-app.use(auth());
+app.use(auth);
 
 app.get('/todos', (req, res) => {
     if (todos.length === 0) {
-        res.status(404).json({
-            message: "No todos to show"
+        res.status(200).json({
+            message: "No todos to show",
+            todos
         })
     }
-    res.json(todos);
+    res.status(200).json(todos);
 })
 
+app.post('/add-todo', (req, res) => {
+    const { todo } = req.body;
+    
+    if (!todo) {
+        res.status(400).json({
+            message: "Empty todo field!!"
+        })
+        return;
+    }
+
+    todos.push({
+        todo: todo,
+        completed: false
+    });
+
+    res.status(201).json({
+        message: "Todo created successfully"
+    });
+})
+
+app.put('/update-todo', (req, res) => {
+    const { todo, updated_todo } = req.body;
+
+    if (!updated_todo) {
+        res.status(400).json({
+            messgae: "Empty Update Todo Field"
+        });
+        return;
+    }
+
+    const todoToUpdate = todos.find(t => t.todo === todo);
+    todoToUpdate.todo = updated_todo;
+
+    res.status(200).json({
+        message: "Todo updated successfully",
+        todos
+    })
+})
+
+app.delete('/delete-todo', (req, res) => {
+    const { todoToDelete } = req.body;
+    
+    const index = todos.findIndex(t => t.todo === todoToDelete);
+
+    todos.splice(index, 1);
+
+    res.status(200).json({
+        message: "Todo deleted successfully",
+        todos 
+    });
+});
+
+app.post('/completed', (req, res) => {
+    const { completedTodo } = req.body;
+
+    const todo = todos.find(t => t.todo === completedTodo);
+
+    todo.completed = true;
+    res.status(200).json({
+        messgae: "Todo completed"
+    })
+})
 
 
 app.listen(port, () => {
