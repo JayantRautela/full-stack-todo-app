@@ -24,7 +24,7 @@ app.post('/signup', (req, res) => {
 
     const user = users.find(u => u.username === username);
     if (user) {
-        res.status(400).json({
+        res.status(409).json({
             message: "User already exists."
         });
         return;
@@ -35,7 +35,7 @@ app.post('/signup', (req, res) => {
         password: password
     });
 
-    res.status(200).json({
+    res.status(201).json({
         message: "User is successfully signed up!!"
     });
 })
