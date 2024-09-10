@@ -31,3 +31,7 @@ a:hover {
     justify-content: center;
     background-color: rgb(25, 25, 69);
 }
+
+.todos {
+    cursor: pointer;
+}
