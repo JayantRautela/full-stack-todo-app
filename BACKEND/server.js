@@ -95,6 +95,12 @@ function auth (req, res, next) {
 
 app.use(auth);
 
+app.get('/me', (req, res) => {
+    res.status(200).json({
+        username: req.user
+    });
+})
+
 app.get('/todos', (req, res) => {
     if (todos.length === 0) {
         res.status(200).json({
