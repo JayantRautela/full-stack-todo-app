@@ -15,6 +15,8 @@ async function showTodos() {
 
         const checkBox = document.createElement('input');
         checkBox.type = 'checkbox';
+        checkBox.classList.add(".checkbox");
+        checkBox.addEventListener("click", () => completeTodo(id));
 
         const todoText = document.createTextNode(todo);
 
@@ -23,11 +25,39 @@ async function showTodos() {
         deleteButton.classList.add('delete');
         deleteButton.addEventListener('click', () => deleteTodo(id));
 
+        if (todoItem.completed === true) {
+            checkBox.checked = true;
+            checkBox.disabled = true;
+            deleteButton.disabled = true;
+            deleteButton.style.pointerEvents = "none";
+            deleteButton.style.backgroundColor = "grey";
+            checkBox.style.pointerEvents = "none";
+            todoList.style.backgroundColor = "green";
+        }
+
         todoList.appendChild(checkBox);
         todoList.appendChild(todoText);
         todoList.appendChild(deleteButton);
         todoBox.appendChild(todoList);
     });
+}
+
+async function completeTodo(id) {
+    try {
+        const response = await axios.post('http://localhost:3000/completed', {
+            id: id
+        }, {
+            headers: {
+                token: localStorage.getItem("token")
+            }
+        })
+        if(response.status === 200) {
+            alert("Todo Completed");
+            location.reload();
+        }
+    } catch (error) {
+        
+    }
 }
 
 async function deleteTodo(id) {
@@ -113,15 +143,12 @@ async function loadProfile() {
             showTodos();
         }
     } catch (error) {
-        if (error.response) {
-            if (error.response.status === 401) {
-                alert("You are not signed in")
-            } 
-        } else if (error.request) {
-            alert("Check your network and try again");
-        } else {
-            alert("Some error occured : " + error.message);
-        }
+        document.querySelector(".todo-input").disabled = true;
+        document.querySelector(".add-todo").disabled = true;
+        document.querySelector(".add-todo").style.pointerEvents = "none";
+        document.querySelector(".add-todo").style.backgroundColor = "grey";
+        document.querySelector(".logout-btn").innerHTML = "Main Page"
+        document.querySelector(".logout-btn").setAttribute("href", "../index.html")
     }
 }
 
