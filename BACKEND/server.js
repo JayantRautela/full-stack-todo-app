@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const jwt = require('jsonwebtoken');
+const { v4: uuidv4 } = require('uuid');
 
 const app = express();
 
@@ -11,6 +12,7 @@ let todos = [];
 
 app.use(express.json());
 app.use(cors());
+
 
 app.post('/signup', (req, res) => {
     const { username, password } = req.body;
@@ -102,12 +104,6 @@ app.get('/me', (req, res) => {
 })
 
 app.get('/todos', (req, res) => {
-    if (todos.length === 0) {
-        res.status(200).json({
-            message: "No todos to show",
-            todos
-        })
-    }
     res.status(200).json(todos);
 })
 
@@ -121,13 +117,17 @@ app.post('/add-todo', (req, res) => {
         return;
     }
 
-    todos.push({
+    const newTodo = {
         todo: todo,
-        completed: false
-    });
+        completed: false,
+        id: uuidv4() 
+    };
+
+    todos.push(newTodo);
 
     res.status(201).json({
-        message: "Todo created successfully"
+        message: "Todo created successfully",
+        id: newTodo.id
     });
 })
 
@@ -151,22 +151,21 @@ app.put('/update-todo', (req, res) => {
 })
 
 app.delete('/delete-todo', (req, res) => {
-    const { todoToDelete } = req.body;
+    const { id } = req.body;
     
-    const index = todos.findIndex(t => t.todo === todoToDelete);
+    const index = todos.findIndex(t => t.id === id);
 
     todos.splice(index, 1);
 
     res.status(200).json({
         message: "Todo deleted successfully",
-        todos 
     });
 });
 
 app.post('/completed', (req, res) => {
-    const { completedTodo } = req.body;
+    const { id } = req.body;
 
-    const todo = todos.find(t => t.todo === completedTodo);
+    const todo = todos.find(t => t.id === id);
 
     todo.completed = true;
     res.status(200).json({
