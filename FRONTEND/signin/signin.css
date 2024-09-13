@@ -104,3 +104,7 @@ body {
 .result-div a:hover {
     background-color: rgb(96, 84, 132);
 }
+
+p {
+    margin-top: 1rem;
+}

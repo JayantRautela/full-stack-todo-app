@@ -152,4 +152,11 @@ async function loadProfile() {
     }
 }
 
+document.querySelector(".logout-btn").addEventListener('click', (event) => {
+    event.preventDefault();
+    localStorage.removeItem("token");
+    alert("User logged out successfully");
+    window.location.href = "../index.html";
+})
+
 window.onload = loadProfile;
