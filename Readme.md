@@ -1,1 +1,1 @@
-This a full stack TODO application.
+Simple repo for devops practice

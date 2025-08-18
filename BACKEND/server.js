@@ -13,6 +13,13 @@ let todos = [];
 app.use(express.json());
 app.use(cors());
 
+app.get('/', (req, res) => {
+    res.status(200).json({
+        message: "Server running fine"
+    });
+    return;
+})
+
 
 app.post('/signup', (req, res) => {
     const { username, password } = req.body;
